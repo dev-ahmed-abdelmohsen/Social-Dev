@@ -16,6 +16,7 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    // This function is declared inside useEffect to use async/await
     const loadVideos = async () => {
       setIsLoading(true);
       setError(null);
@@ -24,6 +25,7 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
         setVideos(data);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+        // Customize the error message for long response times
         const userFriendlyError = `${errorMessage} The server might be taking too long to respond. Please try again in a moment.`;
         setError(userFriendlyError);
         toast({
@@ -35,21 +37,33 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
         setIsLoading(false);
       }
     };
+
+    // Call the function to load videos when the component mounts or channelId changes.
     loadVideos();
   }, [channelId, toast]);
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div key={i} className="flex flex-col space-y-3">
-            <Skeleton className="aspect-video w-full rounded-xl" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
+      <>
+        <div className="mb-6 flex flex-col items-center justify-center rounded-lg border border-dashed border-yellow-500/50 bg-yellow-500/10 p-6 text-center">
+            <div className="text-yellow-500 animate-spin h-6 w-6 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             </div>
-          </div>
-        ))}
-      </div>
+            <h3 className="text-lg font-semibold text-yellow-700 dark:text-yellow-300">Fetching Videos...</h3>
+            <p className="text-sm text-yellow-600 dark:text-yellow-400">This may take a moment as the data is being prepared.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className="flex flex-col space-y-3">
+              <Skeleton className="aspect-video w-full rounded-xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
     );
   }
 

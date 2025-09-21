@@ -1,6 +1,7 @@
 import { VideosGrid } from '@/components/videos-grid';
 
 export default function ChannelPage({ params }: { params: { channelId: string } }) {
+  // We get the channelId from the URL params as before.
   const channelId = params.channelId;
 
   return (
@@ -14,6 +15,7 @@ export default function ChannelPage({ params }: { params: { channelId: string } 
           </p>
       </header>
       <main>
+        {/* VideosGrid will handle its own data fetching, loading, and error states */}
         <VideosGrid channelId={channelId} />
       </main>
     </div>

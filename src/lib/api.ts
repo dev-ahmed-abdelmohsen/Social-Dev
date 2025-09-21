@@ -11,13 +11,15 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-      cache: 'no-store',
+      // Set a long timeout if possible (this is not standard in fetch API but some environments support it)
+      // As a better alternative, we handle long loading states in the UI.
+      cache: 'no-store', // Disable caching for this request
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`API Error Response: ${errorText}`);
-      throw new Error(`The server returned an error. Please check the channel URL and try again.`);
+      throw new Error(`The server returned an error: ${response.statusText}. Please check the channel URL and try again.`);
     }
 
     const text = await response.text();
@@ -34,17 +36,20 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
     if (error instanceof Error && error.message.includes('fetch failed')) {
         throw new Error('Could not connect to the server. Please ensure it is running and accessible.');
     }
+    // Re-throw other errors
     throw error;
   }
 }
 
 export const fetchUploads = async (channelId: string): Promise<Video[]> => {
     console.log(`Fetching uploads for channel: ${channelId}`);
+    // The backend now sends an array directly.
     const data = await apiPost<ApiVideo[]>('/api/uploads', { channelId });
 
+    // Ensure data is an array before mapping
     if (!Array.isArray(data)) {
-      console.error("API did not return an array. Data received:", data);
-      // Return an empty array to prevent crashing the UI if the structure is wrong.
+      console.error("API did not return an array as expected. Data received:", data);
+      // Return an empty array to prevent crashing the UI.
       return [];
     }
 
