@@ -1,7 +1,7 @@
 import { VideosGrid } from '@/components/videos-grid';
 
 export default function ChannelPage({ params }: { params: { channelId: string } }) {
-  const { channelId } = params;
+  const channelId = params.channelId;
 
   return (
     <div className="container mx-auto min-h-screen max-w-7xl p-4 sm:p-6 lg:p-8">
