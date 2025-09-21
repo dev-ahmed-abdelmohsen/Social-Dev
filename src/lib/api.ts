@@ -11,9 +11,7 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-      // Set a long timeout if possible (this is not standard in fetch API but some environments support it)
-      // As a better alternative, we handle long loading states in the UI.
-      cache: 'no-store', // Disable caching for this request
+      cache: 'no-store', 
     });
 
     if (!response.ok) {
@@ -24,7 +22,7 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
 
     const text = await response.text();
     
-    // If the response body is empty, return an empty array to avoid JSON parsing errors.
+    // If the response body is empty (due to timeout or other issues), return an empty array to avoid JSON parsing errors.
     if (!text) {
       return [] as T;
     }
@@ -43,10 +41,8 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
 
 export const fetchUploads = async (channelId: string): Promise<Video[]> => {
     console.log(`Fetching uploads for channel: ${channelId}`);
-    // The backend now sends an array directly.
     const data = await apiPost<ApiVideo[]>('/api/uploads', { channelId });
 
-    // Ensure data is an array before mapping
     if (!Array.isArray(data)) {
       console.error("API did not return an array as expected. Data received:", data);
       // Return an empty array to prevent crashing the UI.
