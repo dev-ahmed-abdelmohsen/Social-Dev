@@ -1,7 +1,7 @@
 
 import type { Video, ApiVideo } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
 
 async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
   try {
@@ -21,8 +21,9 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
     }
 
     const text = await response.text();
-    // If the response is empty, return an empty array to avoid parsing errors.
+    
     if (!text) {
+      // If the response body is empty, return an empty array to avoid JSON parsing errors.
       return [] as T;
     }
 
@@ -39,11 +40,11 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
 
 export const fetchUploads = async (channelId: string): Promise<Video[]> => {
     console.log(`Fetching uploads for channel: ${channelId}`);
-    const data = await apiPost<ApiVideo[]>('/uploads', { channelId });
+    const data = await apiPost<ApiVideo[]>('/api/uploads', { channelId });
 
     if (!Array.isArray(data)) {
       console.error("API did not return an array. Data received:", data);
-      // Return an empty array to prevent crashing the UI
+      // Return an empty array to prevent crashing the UI if the structure is wrong.
       return [];
     }
 
