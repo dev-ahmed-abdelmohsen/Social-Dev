@@ -24,11 +24,12 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
         setVideos(data);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-        setError(errorMessage);
+        const userFriendlyError = `${errorMessage} The server might be taking too long to respond. Please try again in a moment.`;
+        setError(userFriendlyError);
         toast({
           variant: "destructive",
           title: "Failed to fetch videos",
-          description: errorMessage,
+          description: userFriendlyError,
         });
       } finally {
         setIsLoading(false);
@@ -40,7 +41,7 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: 20 }).map((_, i) => (
           <div key={i} className="flex flex-col space-y-3">
             <Skeleton className="aspect-video w-full rounded-xl" />
             <div className="space-y-2">
@@ -67,7 +68,7 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-24 text-center">
         <VideoIcon className="mb-4 h-12 w-12 text-muted-foreground" />
         <h3 className="text-lg font-semibold">No Videos Found</h3>
-        <p className="text-sm text-muted-foreground">Could not find any uploaded videos for this channel.</p>
+        <p className="text-sm text-muted-foreground">Could not find any uploaded videos for this channel, or the server took too long to respond.</p>
       </div>
     );
   }
