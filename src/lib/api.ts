@@ -35,11 +35,11 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
 
 export const fetchUploads = async (channelId: string): Promise<Video[]> => {
     console.log(`Fetching uploads for channel: ${channelId}`);
-    const data = await apiPost<{ videos: ApiVideo[] }>('/uploads', { channelId });
-    if (!data.videos || !Array.isArray(data.videos)) {
+    const data = await apiPost<ApiVideo[]>('/uploads', { channelId });
+    if (!Array.isArray(data)) {
       throw new Error("Invalid data structure received from API.");
     }
-    return data.videos.map(v => ({
+    return data.map(v => ({
       id: v.videoId,
       title: v.title,
       thumbnail: v.thumbnail,
