@@ -22,8 +22,8 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
 
     const text = await response.text();
     
-    // If the response body is empty (due to timeout or other issues), return an empty array to avoid JSON parsing errors.
     if (!text) {
+      console.log("API returned an empty response, likely due to a timeout on the backend.");
       return [] as T;
     }
 
@@ -34,7 +34,6 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
     if (error instanceof Error && error.message.includes('fetch failed')) {
         throw new Error('Could not connect to the server. Please ensure it is running and accessible.');
     }
-    // Re-throw other errors
     throw error;
   }
 }
@@ -45,7 +44,6 @@ export const fetchUploads = async (channelId: string): Promise<Video[]> => {
 
     if (!Array.isArray(data)) {
       console.error("API did not return an array as expected. Data received:", data);
-      // Return an empty array to prevent crashing the UI.
       return [];
     }
 

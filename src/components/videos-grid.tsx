@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,7 +17,6 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // This function is declared inside useEffect to use async/await
     const loadVideos = async () => {
       setIsLoading(true);
       setError(null);
@@ -25,7 +25,6 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
         setVideos(data);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-        // Customize the error message for long response times
         const userFriendlyError = `${errorMessage} The server might be taking too long to respond. Please try again in a moment.`;
         setError(userFriendlyError);
         toast({
@@ -38,7 +37,6 @@ export function VideosGrid({ channelId }: { channelId: string; }) {
       }
     };
 
-    // Call the function to load videos when the component mounts or channelId changes.
     loadVideos();
   }, [channelId, toast]);
 
