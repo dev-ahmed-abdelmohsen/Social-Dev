@@ -1,10 +1,3 @@
-export interface Playlist {
-  id: string;
-  title: string;
-  thumbnail: string;
-  videoCount: number;
-}
-
 export interface Video {
   id: string; // Mapped from videoId
   title: string;
@@ -18,11 +11,4 @@ export interface ApiVideo {
   title: string;
   thumbnail: string;
   publishedAt: string;
-}
-
-export interface ApiPlaylist {
-    id: string;
-    title: string;
-    thumbnail: string;
-    videoCount: number;
 }

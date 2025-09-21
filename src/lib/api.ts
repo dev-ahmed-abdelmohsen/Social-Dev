@@ -1,5 +1,5 @@
 
-import type { Playlist, Video, ApiPlaylist, ApiVideo } from './types';
+import type { Video, ApiVideo } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
 
@@ -33,27 +33,9 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
   }
 }
 
-
-export const fetchPlaylists = async (channelId: string): Promise<Playlist[]> => {
-  console.log(`Fetching playlists for channel: ${channelId}`);
-  const data = await apiPost<ApiPlaylist[]>('/playlists', { channelId });
-  return data.map(p => ({ ...p }));
-};
-
 export const fetchUploads = async (channelId: string): Promise<Video[]> => {
     console.log(`Fetching uploads for channel: ${channelId}`);
     const data = await apiPost<ApiVideo[]>('/uploads', { channelId });
-    return data.map(v => ({
-      id: v.videoId,
-      title: v.title,
-      thumbnail: v.thumbnail,
-      publishedAt: v.publishedAt,
-    }));
-};
-
-export const fetchPlaylistVideos = async (playlistId: string): Promise<Video[]> => {
-    console.log(`Fetching videos for playlist: ${playlistId}`);
-    const data = await apiPost<ApiVideo[]>('/playlist-videos', { playlistId });
     return data.map(v => ({
       id: v.videoId,
       title: v.title,
