@@ -37,7 +37,8 @@ export const fetchUploads = async (channelId: string): Promise<Video[]> => {
     console.log(`Fetching uploads for channel: ${channelId}`);
     const data = await apiPost<ApiVideo[]>('/uploads', { channelId });
     if (!Array.isArray(data)) {
-      throw new Error("Invalid data structure received from API.");
+      // This will now throw if the data is not an array.
+      throw new Error("Invalid data structure received from API. Expected an array.");
     }
     return data.map(v => ({
       id: v.videoId,
