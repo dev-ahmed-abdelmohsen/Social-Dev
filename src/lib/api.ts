@@ -43,7 +43,8 @@ export const fetchUploads = async (channelId: string): Promise<Video[]> => {
 
     if (!Array.isArray(data)) {
       console.error("API did not return an array. Data received:", data);
-      throw new Error("Invalid data structure received from API. Expected an array.");
+      // Return an empty array to prevent crashing the UI
+      return [];
     }
 
     return data.map(v => ({
