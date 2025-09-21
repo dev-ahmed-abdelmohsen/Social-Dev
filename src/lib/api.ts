@@ -22,8 +22,8 @@ async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Prom
 
     const text = await response.text();
     
+    // If the response body is empty, return an empty array to avoid JSON parsing errors.
     if (!text) {
-      // If the response body is empty, return an empty array to avoid JSON parsing errors.
       return [] as T;
     }
 
