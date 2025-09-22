@@ -44,15 +44,14 @@ export default async function ChannelPage({
                   <li>
                     Visit{" "}
                     <a
-                      href="https://ytlarge.com/"
+                      href="https://www.tunepocket.com/youtube-channel-id-finder/?srsltid=AfmBOoprJY3RU6BTSrhRO1lIADFwh1hYHJrlOIPRf2qcyBYods4GDiGg"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline"
                     >
-                      YTLarge
+                      TunePocket Channel ID Finder
                     </a>
                   </li>
-                  <li>Scroll down to the "Channel ID Finder" section</li>
                   <li>Enter the YouTube channel URL or username</li>
                   <li>Click "Find Channel ID"</li>
                   <li>Copy the YouTube Channel ID (starts with UC)</li>

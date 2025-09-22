@@ -30,6 +30,6 @@ export function validateYouTubeChannelId(input: string): {
 
   // For any other format, return an error message with instructions
   return {
-    error: `Invalid YouTube channel ID format. Please use YTLarge at https://ytlarge.com/ to get the proper channel ID that starts with "UC".`,
+    error: `Invalid YouTube channel ID format. Please use the TunePocket YouTube Channel ID Finder at https://www.tunepocket.com/youtube-channel-id-finder/ to get the proper channel ID that starts with "UC".`,
   };
 }
