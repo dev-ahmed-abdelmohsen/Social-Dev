@@ -1,56 +1,127 @@
+import type { Video, ApiVideo } from "./types";
 
-import type { Video, ApiVideo } from './types';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+async function apiPost<T>(
+  endpoint: string,
+  body: Record<string, unknown>
+): Promise<T> {
+  console.log(`[DEBUG] API Request to ${endpoint}`, {
+    url: `${API_BASE_URL}${endpoint}`,
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 
-async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
   try {
+    console.time(`[PERF] API call to ${endpoint}`);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-      cache: 'no-store', 
+      cache: "no-store",
+    });
+    console.timeEnd(`[PERF] API call to ${endpoint}`);
+
+    console.log(`[DEBUG] API Response from ${endpoint}`, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries([...response.headers.entries()]),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`API Error Response: ${errorText}`);
-      throw new Error(`The server returned an error: ${response.statusText}. Please check the channel URL and try again.`);
+      console.error(`[ERROR] API Error Response: ${errorText}`);
+      throw new Error(
+        `The server returned an error: ${response.statusText} (${response.status}). Please check the channel URL and try again.`
+      );
     }
 
     const text = await response.text();
-    
-    if (!text) {
-      console.log("API returned an empty response, likely due to a timeout on the backend.");
-      return [] as T;
+    console.log(`[DEBUG] API Response raw text length: ${text.length}`);
+    if (text.length < 100) {
+      console.log(`[DEBUG] API Response raw text content: "${text}"`);
     }
 
-    return JSON.parse(text) as T;
+    if (!text) {
+      console.warn(
+        "[WARN] API returned an empty response, likely due to a timeout on the backend."
+      );
+      // Return empty array for empty responses
+      return [] as unknown as T;
+    }
 
+    try {
+      const parsed = JSON.parse(text) as T;
+      console.log(`[DEBUG] API Response parsed:`, {
+        type: typeof parsed,
+        isArray: Array.isArray(parsed),
+        length: Array.isArray(parsed) ? parsed.length : 0,
+      });
+      return parsed;
+    } catch (parseError) {
+      console.error("[ERROR] Failed to parse JSON response:", parseError);
+      console.error("[ERROR] Raw response:", text);
+      // Return empty array for invalid JSON
+      return [] as unknown as T;
+    }
   } catch (error) {
     console.error(`Fetch error for endpoint ${endpoint}:`, error);
-    if (error instanceof Error && error.message.includes('fetch failed')) {
-        throw new Error('Could not connect to the server. Please ensure it is running and accessible.');
+    if (error instanceof Error && error.message.includes("fetch failed")) {
+      throw new Error(
+        "Could not connect to the server. Please ensure it is running and accessible."
+      );
     }
     throw error;
   }
 }
 
 export const fetchUploads = async (channelId: string): Promise<Video[]> => {
-    console.log(`Fetching uploads for channel: ${channelId}`);
-    const data = await apiPost<ApiVideo[]>('/api/uploads', { channelId });
+  console.log(
+    `[DEBUG] fetchUploads - Starting request for channel: ${channelId}`
+  );
+
+  try {
+    console.time(`[PERF] fetchUploads for ${channelId}`);
+    const data = await apiPost<ApiVideo[]>("/api/uploads", { channelId });
+    console.timeEnd(`[PERF] fetchUploads for ${channelId}`);
+
+    console.log(`[DEBUG] fetchUploads - Response received for ${channelId}:`, {
+      dataType: typeof data,
+      isArray: Array.isArray(data),
+      dataLength: Array.isArray(data) ? data.length : 0,
+      dataPreview: Array.isArray(data) && data.length > 0 ? data[0] : data,
+    });
 
     if (!Array.isArray(data)) {
-      console.error("API did not return an array as expected. Data received:", data);
+      console.error(
+        "[ERROR] API did not return an array as expected. Data received:",
+        JSON.stringify(data)
+      );
+      // Return empty array for consistent data structure
       return [];
     }
 
-    return data.map(v => ({
+    const mappedData = data.map((v) => ({
       id: v.videoId,
       title: v.title,
       thumbnail: v.thumbnail,
       publishedAt: v.publishedAt,
     }));
+
+    console.log(
+      `[DEBUG] fetchUploads - Mapped ${mappedData.length} videos for ${channelId}`
+    );
+
+    return mappedData;
+  } catch (error) {
+    console.error(
+      `[ERROR] fetchUploads - Error fetching data for ${channelId}:`,
+      error
+    );
+    // Rethrow to let component handle the error
+    throw error;
+  }
 };

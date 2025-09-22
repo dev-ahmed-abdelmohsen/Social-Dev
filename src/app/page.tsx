@@ -1,50 +1,86 @@
-import { ChannelForm } from '@/components/channel-form';
-import { Youtube, Facebook, Tv } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+
+export default function HomePage() {
+  const [channelInput, setChannelInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!channelInput.trim()) return;
+
+    setIsLoading(true);
+
+    // Navigate to the channel page with the entered input
+    router.push(`/channel/${encodeURIComponent(channelInput.trim())}`);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-8 dark">
-      <div className="w-full max-w-md">
-        <div className="flex flex-col items-center space-y-4 text-center mb-10">
-            <div className="rounded-full bg-primary/10 p-4 border-2 border-primary/20 shadow-lg">
-                <Tv className="h-12 w-12 text-primary" />
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter text-foreground">
-                Social Explorer
-            </h1>
-            <p className="text-muted-foreground max-w-sm text-lg">
-                Enter a channel or page URL to explore its content.
+    <div className="container mx-auto min-h-screen max-w-7xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center">
+      <div className="max-w-3xl w-full space-y-8 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+          YouTube Channel Explorer
+        </h1>
+        <p className="text-xl text-muted-foreground">
+          Enter a YouTube channel ID to explore videos
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div className="flex w-full max-w-lg mx-auto items-center space-x-2">
+            <Input
+              type="text"
+              placeholder="Enter YouTube channel ID (e.g., UCGP8LgaWO1lLfFQUQ2BA7rA)"
+              value={channelInput}
+              onChange={(e) => setChannelInput(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit" disabled={isLoading || !channelInput.trim()}>
+              {isLoading ? (
+                <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
+              ) : (
+                <Search className="h-4 w-4 mr-2" />
+              )}
+              {isLoading ? "Searching..." : "Search"}
+            </Button>
+          </div>
+        </form>
+
+        <div className="pt-8">
+          <div className="text-left bg-muted p-4 rounded-md">
+            <p className="font-medium mb-2">
+              How to find a YouTube channel ID:
             </p>
+            <ol className="list-decimal pl-5 space-y-1 text-sm">
+              <li>
+                Visit{" "}
+                <a
+                  href="https://ytlarge.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-primary"
+                >
+                  YTLarge
+                </a>
+              </li>
+              <li>Scroll down to the "Channel ID Finder" section</li>
+              <li>Enter the YouTube channel URL or username</li>
+              <li>Click "Find Channel ID"</li>
+              <li>Copy the YouTube Channel ID (starts with "UC")</li>
+              <li>Paste it in the search box above</li>
+            </ol>
+            <p className="mt-2 text-sm">
+              Example: UCEHvaZ336u7TIsUQ2c6SAeQ (for @DroosOnline4u)
+            </p>
+          </div>
         </div>
-        
-        <Tabs defaultValue="youtube" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="youtube">
-              <Youtube className="mr-2 h-5 w-5" />
-              YouTube
-            </TabsTrigger>
-            <TabsTrigger value="facebook" disabled>
-              <Facebook className="mr-2 h-5 w-5" />
-              Facebook
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="youtube" className="mt-4">
-            <Card className="bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle>YouTube Channel</CardTitle>
-                <CardDescription>
-                  Enter a valid YouTube channel URL to begin.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChannelForm />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
-    </main>
+    </div>
   );
 }
