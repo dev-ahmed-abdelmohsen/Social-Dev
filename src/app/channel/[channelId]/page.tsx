@@ -1,20 +1,16 @@
 import { VideosGrid } from "@/components/videos-grid";
-import { validateYouTubeChannelId } from "@/lib/channel-mapping";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 
-export default async function ChannelPage({
-  params,
-}: {
-  params: { channelId: string };
-}) {
-  // Get the raw input from the resolved URL params and decode it
-  const rawChannelInput = decodeURIComponent(params.channelId);
-  console.log("[DEBUG] Raw channel input:", rawChannelInput);
+interface PageParams {
+  channelId: string;
+}
 
-  // Validate the YouTube channel ID
-  const { channelId, error } = validateYouTubeChannelId(rawChannelInput);
-  console.log("[DEBUG] Validated channel ID:", channelId || "Invalid");
+export default async function ChannelPage({ params }: { params: PageParams }) {
+  // Safe way to handle channelId, which is now a URL or ID
+  const channelIdentifier = params?.channelId
+    ? decodeURIComponent(params.channelId)
+    : "";
+
+  console.log("[DEBUG] Identifier received on page:", channelIdentifier);
 
   return (
     <div className="container mx-auto min-h-screen max-w-7xl p-4 sm:p-6 lg:p-8">
@@ -23,46 +19,15 @@ export default async function ChannelPage({
           Channel Videos
         </h1>
         <p className="mt-1 max-w-2xl text-sm sm:text-base text-muted-foreground">
-          Showing videos for channel:{" "}
+          Showing videos for:{" "}
           <span className="font-semibold text-primary overflow-hidden text-ellipsis">
-            {rawChannelInput}
+            {channelIdentifier}
           </span>
         </p>
       </header>
       <main>
-        {error ? (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Invalid Channel ID</AlertTitle>
-            <AlertDescription>
-              {error}
-              <div className="mt-4">
-                <p className="font-semibold">
-                  Steps to get a valid channel ID:
-                </p>
-                <ol className="list-decimal pl-5 mt-2 space-y-1">
-                  <li>
-                    Visit{" "}
-                    <a
-                      href="https://www.tunepocket.com/youtube-channel-id-finder/?srsltid=AfmBOoprJY3RU6BTSrhRO1lIADFwh1hYHJrlOIPRf2qcyBYods4GDiGg"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      TunePocket Channel ID Finder
-                    </a>
-                  </li>
-                  <li>Enter the YouTube channel URL or username</li>
-                  <li>Click "Find Channel ID"</li>
-                  <li>Copy the YouTube Channel ID (starts with UC)</li>
-                  <li>Return here and search using that ID</li>
-                </ol>
-              </div>
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <VideosGrid channelId={channelId!} />
-        )}
+        {/* Pass the identifier directly to VideosGrid. The backend will process it. */}
+        <VideosGrid channelId={channelIdentifier} />
       </main>
     </div>
   );

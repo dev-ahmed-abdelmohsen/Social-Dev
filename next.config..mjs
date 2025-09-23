@@ -1,7 +1,5 @@
-import type {NextConfig} from 'next';
-
-const nextConfig: NextConfig = {
-  /* config options here */
+// next.config.mjs
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -10,6 +8,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
+      // احتفظ بالإعدادات القديمة إذا كنت لا تزال بحاجتها
       {
         protocol: 'https',
         hostname: 'placehold.co',
@@ -27,6 +26,13 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
+      },
+      // --- أضف هذا الجزء ---
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        port: '',
+        pathname: '/vi/**', // استخدام /vi/** أكثر تحديدًا وأمانًا
       },
     ],
   },

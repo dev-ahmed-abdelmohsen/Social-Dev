@@ -1,12 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // إضافة خيار unoptimized لتجاوز خدمة تحسين الصور عندما تعمل في Docker
+    unoptimized: process.env.DOCKER_ENV === "true",
     domains: ["i.ytimg.com"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "i.ytimg.com",
         pathname: "/**",
+      },
+      // إضافة أنماط أكثر شمولاً للصور
+      {
+        protocol: "https",
+        hostname: "**.ytimg.com",
       },
     ],
   },
@@ -18,7 +25,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Other Next.js configurations can be added here
 };
 
 module.exports = nextConfig;
