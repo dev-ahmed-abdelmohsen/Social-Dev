@@ -1,27 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Configure the Next.js Image Optimization system
   images: {
-    // إضافة خيار unoptimized لتجاوز خدمة تحسين الصور عندما تعمل في Docker
-    unoptimized: process.env.DOCKER_ENV === "true",
-    domains: ["i.ytimg.com"],
+    // Define allowed external domains using remotePatterns for security
     remotePatterns: [
       {
         protocol: "https",
         hostname: "i.ytimg.com",
-        pathname: "/**",
-      },
-      // إضافة أنماط أكثر شمولاً للصور
-      {
-        protocol: "https",
-        hostname: "**.ytimg.com",
+        pathname: "/vi/**", // Allows any image from the /vi/ path
       },
     ],
   },
-  // Disable ESLint during builds
+  // Disable ESLint and TypeScript checks during the build to prevent other errors
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Disable TypeScript type checking during builds
   typescript: {
     ignoreBuildErrors: true,
   },

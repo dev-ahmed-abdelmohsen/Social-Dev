@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm cache clean --force
+# RUN npm cache clean --force
 
 RUN npm install
 
@@ -20,12 +20,11 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+# !!!!! السطر الجديد والمهم !!!!!
+COPY --from=builder /app/next.config.js ./next.config.js
 
-# عرّف البورت الذي يعمل عليه التطبيق
 EXPOSE 3000
 
-# تعيين متغير البيئة للإشارة إلى أننا نعمل في بيئة Docker
 ENV DOCKER_ENV=true
 
-# الأمر الذي سيتم تشغيله لبدء السيرفر
 CMD ["npm", "start"]
